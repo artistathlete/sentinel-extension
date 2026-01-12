@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest manifest-version="0.1" xmlns="http://www.tableau.com/xml/extension_manifest">
+  <dashboard-extension id="com.sentinel.guardian" extension-version="1.0.0">
+    <default-locale>en_US</default-locale>
+    <name resource-id="name"/>
+    <description>Sentinel Guardian</description>
+    <author name="Antigravity" email="team@example.com" organization="Antigravity" website="https://example.com"/>
+    <min-api-version>1.0</min-api-version>
+    <source-location>
+      <url>https://artistathlete.github.io/sentinel-extension/index.html</url>
+    </source-location>
+    <icon></icon>
+    <permissions>
+      <permission>full data</permission>
+    </permissions>
+  </dashboard-extension>
+  <resources>
+    <resource id="name">
+      <text locale="en_US">Sentinel Guardian</text>
+    </resource>
+  </resources>
+</manifest>

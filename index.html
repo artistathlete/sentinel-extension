@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sentinel Guardian</title>
+    <script
+        src="https://extensions.tableauusercontent.com/resources/trex/v1/tableau.extensions.1.latest.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: 'Roboto', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        #mitigate-btn {
+            background: linear-gradient(45deg, #ff416c, #ff4b2b);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(255, 75, 43, 0.4);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #mitigate-btn.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255, 75, 43, 0.6);
+        }
+
+        .status-text {
+            position: absolute;
+            bottom: 10px;
+            font-size: 10px;
+            color: #888;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="mitigate-btn" onclick="triggerMitigation()">⚡ MITIGATE RISK</button>
+    <div class="status-text" id="status">Scanning Dashboard...</div>
+    <script src="script.js"></script>
+</body>
+
+</html>
