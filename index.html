@@ -55,8 +55,18 @@
 
 <body>
     <button id="mitigate-btn" onclick="triggerMitigation()">⚡ MITIGATE RISK</button>
-    <div class="status-text" id="status">Scanning Dashboard...</div>
-    <script src="script.js"></script>
+    <div class="status-text" id="status">Initializing...</div>
+
+    <!-- Add version query to force-clear cache -->
+    <script src="script.js?v=999"></script>
+
+    <script>
+        // Emergency Error Logger to Screen
+        window.onerror = function (message, source, lineno, colno, error) {
+            document.getElementById("status").style.color = "red";
+            document.getElementById("status").innerText = "ERR: " + message;
+        };
+    </script>
 </body>
 
 </html>
