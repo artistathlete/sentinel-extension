@@ -1,33 +1,44 @@
-// Sentinel Extension Logic - HYBRID MODE (Optimized with Init Progress Bar)
+// Sentinel Extension Logic - HYBRID MODE (Optimized with Blocking Init)
 
-// ... Init Progress Bar Logic (Same as before) ...
+// DOM Elements
+const btn = document.getElementById("mitigate-btn");
+const status = document.getElementById("status");
 const progressContainer = document.getElementById("progress-container");
 const progressBar = document.getElementById("progress-bar");
-const status = document.getElementById("status");
 
+// Block Button Initially
+btn.disabled = true;
+btn.style.opacity = "0.5";
+btn.innerText = "INITIALIZING...";
+status.innerText = "Connecting to Data Stream...";
+
+// Show Init Progress
 progressContainer.style.opacity = "1";
 progressBar.style.width = "0%";
 
+// Animate Initialization (Fake 2s Load)
 let width = 0;
 const initInterval = setInterval(() => {
-    width += 5;
+    width += 2; // Slower increment
     progressBar.style.width = width + "%";
+
     if (width >= 100) {
         clearInterval(initInterval);
+
+        // Init Complete!
         setTimeout(() => {
             progressContainer.style.opacity = "0";
             progressBar.style.width = "0%";
-        }, 300);
+            enableButton("⚡ MITIGATE RISK");
+            console.log("System Ready");
+        }, 500);
     }
-}, 50);
+}, 30); // 1.5s total
 
-setTimeout(() => {
-    enableButton("⚡ MITIGATE RISK");
-    console.log("Demo Mode Activated");
-}, 1500);
-
+// TABLEAU LOGIC (Background)
 try {
     tableau.extensions.initializeAsync().then(() => {
+        // Just register listeners, don't mess with the UI yet to avoid conflicting with the Init Animation
         let dashboard = tableau.extensions.dashboardContent.dashboard;
         dashboard.worksheets.forEach(worksheet => {
             worksheet.addEventListener(tableau.TableauEventType.MarkSelectionChanged, async (event) => {
@@ -38,20 +49,26 @@ try {
                 }
             });
         });
-    }, (err) => { console.warn(err); });
-} catch (e) { console.warn(e); }
+    }, (err) => console.warn(err));
+} catch (e) { }
 
 function enableButton(text) {
-    const btn = document.getElementById("mitigate-btn");
+    // Only unblock if we aren't already executing
     if (btn.innerText.indexOf("EXECUTING") === -1) {
+        btn.disabled = false;
+        btn.style.opacity = "1";
+        btn.style.pointerEvents = "auto";
         btn.classList.add("active");
         btn.innerHTML = text;
-        status.innerText = "Risks Detected. Awaiting Action.";
+        status.innerText = "System Ready. Risks Detected.";
+        status.style.color = "#888";
     }
 }
 
 function triggerMitigation() {
-    const btn = document.getElementById("mitigate-btn");
+    // Disable during action
+    btn.disabled = true;
+    btn.style.opacity = "0.8";
 
     btn.innerHTML = "🔄 EXECUTING FLOW...";
     btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
@@ -66,22 +83,24 @@ function triggerMitigation() {
 
     setTimeout(() => {
         btn.innerHTML = "✅ RESOLVED";
-        // DETAILED FEEDBACK for the user
         status.innerHTML = "Salesforce Flow Triggered.<br>Inventory re-routed from <b>Hub B</b> to <b>Hub A</b>.<br>Ticket #SF-4291 Created.";
-        status.style.color = "#38ef7d"; // Green text
+        status.style.color = "#38ef7d";
 
         setTimeout(() => {
             progressContainer.style.opacity = "0";
         }, 500);
 
         setTimeout(() => {
+            // Reset to ready state
+            btn.disabled = false;
+            btn.style.opacity = "1";
             btn.innerHTML = "⚡ MITIGATE RISK";
             btn.classList.add("active");
             btn.style.background = "";
-            status.innerHTML = "System Scanned. Ready."; // Reset text
-            status.style.color = "#888"; // Reset color
+            status.innerText = "System Scanned. Ready.";
+            status.style.color = "#888";
             progressBar.style.width = "0%";
-        }, 6000); // Longer wait time to read the message
+        }, 6000);
 
     }, 2000);
 }
