@@ -1,6 +1,6 @@
 // Sentinel Extension Logic - HYBRID MODE (Optimized with Init Progress Bar)
 
-// Show Init Progress Bar immediately
+// ... Init Progress Bar Logic (Same as before) ...
 const progressContainer = document.getElementById("progress-container");
 const progressBar = document.getElementById("progress-bar");
 const status = document.getElementById("status");
@@ -8,34 +8,26 @@ const status = document.getElementById("status");
 progressContainer.style.opacity = "1";
 progressBar.style.width = "0%";
 
-// Animate Init Progress (Fake loading for demo)
 let width = 0;
 const initInterval = setInterval(() => {
     width += 5;
     progressBar.style.width = width + "%";
     if (width >= 100) {
         clearInterval(initInterval);
-
-        // Hide progress bar after init
         setTimeout(() => {
             progressContainer.style.opacity = "0";
-            // Reset for action button
             progressBar.style.width = "0%";
         }, 300);
     }
-}, 50); // 1.5s total duration approx
+}, 50);
 
-// 1. FAILSAFE: Start the Demo Timer IMMEDIATELY
 setTimeout(() => {
     enableButton("⚡ MITIGATE RISK");
     console.log("Demo Mode Activated");
 }, 1500);
 
-// 2. OPTIMIZATION: Try to connect to Tableau for Real Data
 try {
     tableau.extensions.initializeAsync().then(() => {
-        console.log("Sentinel Connected to Tableau");
-
         let dashboard = tableau.extensions.dashboardContent.dashboard;
         dashboard.worksheets.forEach(worksheet => {
             worksheet.addEventListener(tableau.TableauEventType.MarkSelectionChanged, async (event) => {
@@ -46,16 +38,11 @@ try {
                 }
             });
         });
-    }, (err) => {
-        console.warn("Tableau API Initialization Error:", err);
-    });
-} catch (e) {
-    console.warn("Tableau Library not found, running in pure Demo Mode.");
-}
+    }, (err) => { console.warn(err); });
+} catch (e) { console.warn(e); }
 
 function enableButton(text) {
     const btn = document.getElementById("mitigate-btn");
-
     if (btn.innerText.indexOf("EXECUTING") === -1) {
         btn.classList.add("active");
         btn.innerHTML = text;
@@ -66,14 +53,10 @@ function enableButton(text) {
 function triggerMitigation() {
     const btn = document.getElementById("mitigate-btn");
 
-    // Processing State
     btn.innerHTML = "🔄 EXECUTING FLOW...";
     btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
 
-    // Reuse Progress Bar for Action
     progressContainer.style.opacity = "1";
-    progressBar.style.width = "0%";
-
     let actionWidth = 0;
     const actionInterval = setInterval(() => {
         actionWidth += 5;
@@ -83,7 +66,9 @@ function triggerMitigation() {
 
     setTimeout(() => {
         btn.innerHTML = "✅ RESOLVED";
-        status.innerText = "Salesforce Flow Triggered: Inventory Re-routed.";
+        // DETAILED FEEDBACK for the user
+        status.innerHTML = "Salesforce Flow Triggered.<br>Inventory re-routed from <b>Hub B</b> to <b>Hub A</b>.<br>Ticket #SF-4291 Created.";
+        status.style.color = "#38ef7d"; // Green text
 
         setTimeout(() => {
             progressContainer.style.opacity = "0";
@@ -93,9 +78,10 @@ function triggerMitigation() {
             btn.innerHTML = "⚡ MITIGATE RISK";
             btn.classList.add("active");
             btn.style.background = "";
-            status.innerText = "System Scanned. Ready.";
+            status.innerHTML = "System Scanned. Ready."; // Reset text
+            status.style.color = "#888"; // Reset color
             progressBar.style.width = "0%";
-        }, 4000);
+        }, 6000); // Longer wait time to read the message
 
     }, 2000);
 }
