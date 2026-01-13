@@ -1,14 +1,12 @@
-// Sentinel Extension Logic - HYBRID MODE (Optimized)
+// Sentinel Extension Logic - HYBRID MODE (Optimized with Progress Bar)
 
 // 1. FAILSAFE: Start the Demo Timer IMMEDIATELY
-// This guarantees the button appears even if Tableau API hangs.
 setTimeout(() => {
     enableButton("⚡ MITIGATE RISK");
     console.log("Demo Mode Activated");
 }, 1500);
 
 // 2. OPTIMIZATION: Try to connect to Tableau for Real Data
-// If this succeeds, it will overwrite the "Demo" text with real "Item Counts"
 try {
     tableau.extensions.initializeAsync().then(() => {
         console.log("Sentinel Connected to Tableau");
@@ -48,15 +46,36 @@ function enableButton(text) {
 function triggerMitigation() {
     const btn = document.getElementById("mitigate-btn");
     const status = document.getElementById("status");
+    const progressContainer = document.getElementById("progress-container");
+    const progressBar = document.getElementById("progress-bar");
 
     // Processing State
     btn.innerHTML = "🔄 EXECUTING FLOW...";
     btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)"; // Green gradient
 
+    // Show Progress Bar
+    progressContainer.style.opacity = "1";
+    progressBar.style.width = "0%";
+
+    let width = 0;
+    const interval = setInterval(() => {
+        width += 5; // Increment width
+        progressBar.style.width = width + "%";
+
+        if (width >= 100) {
+            clearInterval(interval);
+        }
+    }, 100); // 2000ms / 20 steps = 100ms interval
+
     // Simulate API Call delay
     setTimeout(() => {
         btn.innerHTML = "✅ RESOLVED";
         status.innerText = "Salesforce Flow Triggered: Inventory Re-routed.";
+
+        // Hide Progress Bar after success
+        setTimeout(() => {
+            progressContainer.style.opacity = "0";
+        }, 500);
 
         // Reset after 4 seconds
         setTimeout(() => {
@@ -64,6 +83,7 @@ function triggerMitigation() {
             btn.classList.add("active"); // Keep active for convenience
             btn.style.background = ""; // Reset color
             status.innerText = "System Scanned. Ready.";
+            progressBar.style.width = "0%"; // Reset bar
         }, 4000);
 
     }, 2000);
