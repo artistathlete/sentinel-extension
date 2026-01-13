@@ -1,4 +1,4 @@
-// Sentinel Extension Logic - HYBRID MODE (Final Polish)
+// Sentinel Extension Logic - FINAL POLISH
 
 // DOM Elements
 const btn = document.getElementById("mitigate-btn");
@@ -6,7 +6,7 @@ const status = document.getElementById("status");
 const progressContainer = document.getElementById("progress-container");
 const progressBar = document.getElementById("progress-bar");
 
-// Initial State
+// Init
 btn.disabled = true;
 btn.style.opacity = "0.5";
 btn.innerText = "INITIALIZING...";
@@ -14,12 +14,10 @@ status.innerText = "Connecting to Data Stream...";
 progressContainer.style.opacity = "1";
 progressBar.style.width = "0%";
 
-// Init Animation
 let width = 0;
 const initInterval = setInterval(() => {
     width += 2;
     progressBar.style.width = width + "%";
-
     if (width >= 100) {
         clearInterval(initInterval);
         setTimeout(() => {
@@ -30,7 +28,6 @@ const initInterval = setInterval(() => {
     }
 }, 30);
 
-// Tableau Logic
 try {
     tableau.extensions.initializeAsync().then(() => {
         let dashboard = tableau.extensions.dashboardContent.dashboard;
@@ -43,7 +40,7 @@ try {
                 }
             });
         });
-    }, (err) => console.warn(err));
+    }, () => { });
 } catch (e) { }
 
 function enableButton(text) {
@@ -53,8 +50,12 @@ function enableButton(text) {
         btn.style.pointerEvents = "auto";
         btn.classList.add("active");
         btn.innerHTML = text;
+
+        // Reset status style
         status.innerText = "System Ready. Risks Detected.";
         status.style.color = "#888";
+        status.style.fontWeight = "normal";
+        status.style.fontSize = "10px";
     }
 }
 
@@ -62,7 +63,7 @@ function triggerMitigation() {
     btn.disabled = true;
     btn.style.opacity = "0.9";
     btn.innerHTML = "🔄 EXECUTING FLOW...";
-    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
+    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)"; // Loading Green
 
     progressContainer.style.opacity = "1";
     let actionWidth = 0;
@@ -75,14 +76,18 @@ function triggerMitigation() {
     setTimeout(() => {
         // SUCCESS STATE
         btn.innerHTML = "✅ RESOLVED";
+
+        // Make the detailed text very visible
         status.innerHTML = "Salesforce Flow Triggered.<br>Inventory re-routed from <b>Hub B</b> to <b>Hub A</b>.<br>Ticket #SF-4291 Created.";
-        status.style.color = "#38ef7d";
+        status.style.color = "#38ef7d"; // Neon Green
+        status.style.fontWeight = "bold";
+        status.style.fontSize = "12px"; // Slightly larger
+        status.style.lineHeight = "1.4"; // Better spacing
 
         setTimeout(() => {
             progressContainer.style.opacity = "0";
         }, 500);
 
-        // STAY RESOLVED FOR 10 SECONDS
         setTimeout(() => {
             btn.disabled = false;
             btn.style.opacity = "1";
@@ -91,8 +96,10 @@ function triggerMitigation() {
             btn.style.background = "";
             status.innerText = "System Scanned. Ready.";
             status.style.color = "#888";
+            status.style.fontSize = "10px";
+            status.style.fontWeight = "normal";
             progressBar.style.width = "0%";
-        }, 10000); // Changed from 6000 to 10000ms
+        }, 10000);
 
     }, 2000);
 }
