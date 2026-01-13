@@ -1,4 +1,29 @@
-// Sentinel Extension Logic - HYBRID MODE (Optimized with Progress Bar)
+// Sentinel Extension Logic - HYBRID MODE (Optimized with Init Progress Bar)
+
+// Show Init Progress Bar immediately
+const progressContainer = document.getElementById("progress-container");
+const progressBar = document.getElementById("progress-bar");
+const status = document.getElementById("status");
+
+progressContainer.style.opacity = "1";
+progressBar.style.width = "0%";
+
+// Animate Init Progress (Fake loading for demo)
+let width = 0;
+const initInterval = setInterval(() => {
+    width += 5;
+    progressBar.style.width = width + "%";
+    if (width >= 100) {
+        clearInterval(initInterval);
+
+        // Hide progress bar after init
+        setTimeout(() => {
+            progressContainer.style.opacity = "0";
+            // Reset for action button
+            progressBar.style.width = "0%";
+        }, 300);
+    }
+}, 50); // 1.5s total duration approx
 
 // 1. FAILSAFE: Start the Demo Timer IMMEDIATELY
 setTimeout(() => {
@@ -16,7 +41,6 @@ try {
             worksheet.addEventListener(tableau.TableauEventType.MarkSelectionChanged, async (event) => {
                 const marks = await event.worksheet.getSelectedMarksAsync();
                 if (marks.data.length > 0 && marks.data[0].data.length > 0) {
-                    // Real selection found! Update button with specific count
                     const count = marks.data[0].data.length;
                     enableButton("⚡ MITIGATE " + count + " ORDER(S)");
                 }
@@ -29,12 +53,9 @@ try {
     console.warn("Tableau Library not found, running in pure Demo Mode.");
 }
 
-// Helper Function
 function enableButton(text) {
     const btn = document.getElementById("mitigate-btn");
-    const status = document.getElementById("status");
 
-    // Only update if not already clicking
     if (btn.innerText.indexOf("EXECUTING") === -1) {
         btn.classList.add("active");
         btn.innerHTML = text;
@@ -42,48 +63,38 @@ function enableButton(text) {
     }
 }
 
-// Action Logic
 function triggerMitigation() {
     const btn = document.getElementById("mitigate-btn");
-    const status = document.getElementById("status");
-    const progressContainer = document.getElementById("progress-container");
-    const progressBar = document.getElementById("progress-bar");
 
     // Processing State
     btn.innerHTML = "🔄 EXECUTING FLOW...";
-    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)"; // Green gradient
+    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
 
-    // Show Progress Bar
+    // Reuse Progress Bar for Action
     progressContainer.style.opacity = "1";
     progressBar.style.width = "0%";
 
-    let width = 0;
-    const interval = setInterval(() => {
-        width += 5; // Increment width
-        progressBar.style.width = width + "%";
+    let actionWidth = 0;
+    const actionInterval = setInterval(() => {
+        actionWidth += 5;
+        progressBar.style.width = actionWidth + "%";
+        if (actionWidth >= 100) clearInterval(actionInterval);
+    }, 100);
 
-        if (width >= 100) {
-            clearInterval(interval);
-        }
-    }, 100); // 2000ms / 20 steps = 100ms interval
-
-    // Simulate API Call delay
     setTimeout(() => {
         btn.innerHTML = "✅ RESOLVED";
         status.innerText = "Salesforce Flow Triggered: Inventory Re-routed.";
 
-        // Hide Progress Bar after success
         setTimeout(() => {
             progressContainer.style.opacity = "0";
         }, 500);
 
-        // Reset after 4 seconds
         setTimeout(() => {
             btn.innerHTML = "⚡ MITIGATE RISK";
-            btn.classList.add("active"); // Keep active for convenience
-            btn.style.background = ""; // Reset color
+            btn.classList.add("active");
+            btn.style.background = "";
             status.innerText = "System Scanned. Ready.";
-            progressBar.style.width = "0%"; // Reset bar
+            progressBar.style.width = "0%";
         }, 4000);
 
     }, 2000);
