@@ -1,4 +1,4 @@
-// Sentinel Extension Logic - FINAL POLISH
+// Sentinel Extension Logic - FINAL POLISH (With Visual Dashboard Feedback)
 
 // DOM Elements
 const btn = document.getElementById("mitigate-btn");
@@ -28,10 +28,15 @@ const initInterval = setInterval(() => {
     }
 }, 30);
 
+// Global Dashboard Reference
+let displayedDashboard = null;
+
 try {
     tableau.extensions.initializeAsync().then(() => {
-        let dashboard = tableau.extensions.dashboardContent.dashboard;
-        dashboard.worksheets.forEach(worksheet => {
+        // Store reference for later use
+        displayedDashboard = tableau.extensions.dashboardContent.dashboard;
+
+        displayedDashboard.worksheets.forEach(worksheet => {
             worksheet.addEventListener(tableau.TableauEventType.MarkSelectionChanged, async (event) => {
                 const marks = await event.worksheet.getSelectedMarksAsync();
                 if (marks.data.length > 0 && marks.data[0].data.length > 0) {
@@ -51,7 +56,6 @@ function enableButton(text) {
         btn.classList.add("active");
         btn.innerHTML = text;
 
-        // Reset status style
         status.innerText = "System Ready. Risks Detected.";
         status.style.color = "#888";
         status.style.fontWeight = "normal";
@@ -63,7 +67,7 @@ function triggerMitigation() {
     btn.disabled = true;
     btn.style.opacity = "0.9";
     btn.innerHTML = "🔄 EXECUTING FLOW...";
-    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)"; // Loading Green
+    btn.style.background = "linear-gradient(45deg, #11998e, #38ef7d)";
 
     progressContainer.style.opacity = "1";
     let actionWidth = 0;
@@ -77,12 +81,18 @@ function triggerMitigation() {
         // SUCCESS STATE
         btn.innerHTML = "✅ RESOLVED";
 
-        // Make the detailed text very visible
         status.innerHTML = "Salesforce Flow Triggered.<br>Inventory re-routed from <b>Hub B</b> to <b>Hub A</b>.<br>Ticket #SF-4291 Created.";
-        status.style.color = "#38ef7d"; // Neon Green
+        status.style.color = "#38ef7d";
         status.style.fontWeight = "bold";
-        status.style.fontSize = "12px"; // Slightly larger
-        status.style.lineHeight = "1.4"; // Better spacing
+        status.style.fontSize = "12px";
+        status.style.lineHeight = "1.4";
+
+        // VISUAL FEEDBACK: Clear the selections on the dashboard to show "Processed"
+        if (displayedDashboard) {
+            displayedDashboard.worksheets.forEach(ws => {
+                ws.clearSelectedMarksAsync().catch(err => console.log("Clear selection visual feedback"));
+            });
+        }
 
         setTimeout(() => {
             progressContainer.style.opacity = "0";
